@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#18221e" />
+  <meta name="description" content="Juego de automatización y supervivencia en un bosque de piezas encajables." />
+  <title>Ingenio del Bosque</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main id="game-shell" aria-label="Ingenio del Bosque">
+    <canvas id="world" aria-label="Mapa del bosque. Toca una casilla para construir."></canvas>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div><h1>Ingenio</h1><p>del bosque</p></div>
+      </div>
+      <div class="resources" id="resources" aria-label="Tus materiales"></div>
+      <div class="time-controls">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Activar o desactivar sonidos" title="Sonido">♪</button>
+        <button class="speed-btn active" data-speed="1" type="button" aria-label="Velocidad normal">×1</button>
+        <button class="speed-btn" data-speed="2" type="button" aria-label="Velocidad doble">×2</button>
+        <button class="icon-btn" id="pauseBtn" type="button" aria-label="Pausar el juego" title="Pausa">Ⅱ</button>
+      </div>
+    </header>
+
+    <aside class="missions-panel panel" aria-label="Misiones">
+      <div class="panel-kicker">PLAN DE HOY</div>
+      <h2>Campamento seguro</h2>
+      <div class="progress-track"><span id="missionProgress"></span></div>
+      <div id="missions" class="missions"></div>
+      <button id="hintBtn" class="hint-btn" type="button"><span aria-hidden="true">?</span> Dame una pista</button>
+    </aside>
+
+    <div class="world-controls" aria-label="Controles del mapa">
+      <button class="icon-btn" id="zoomIn" type="button" aria-label="Acercar">＋</button>
+      <button class="icon-btn" id="zoomOut" type="button" aria-label="Alejar">−</button>
+      <button class="icon-btn" id="centerMap" type="button" aria-label="Centrar mapa">⌂</button>
+    </div>
+
+    <aside class="inspector panel hidden" id="inspector" aria-live="polite">
+      <button class="close-btn" id="closeInspector" type="button" aria-label="Cerrar">×</button>
+      <div class="inspector-icon" id="inspectorIcon"></div>
+      <div class="panel-kicker" id="inspectorType">MÁQUINA</div>
+      <h2 id="inspectorName"></h2>
+      <p id="inspectorDesc"></p>
+      <div class="machine-status"><span class="pulse"></span><b id="inspectorStatus">En marcha</b></div>
+      <div class="recipe" id="inspectorRecipe"></div>
+      <button id="removeBtn" class="danger-btn" type="button">Desmontar y recuperar</button>
+    </aside>
+
+    <section class="build-dock" aria-label="Mesa de construcción">
+      <div class="dock-head">
+        <div>
+          <span class="dock-label">MESA DE CONSTRUCCIÓN</span>
+          <b id="selectionHelp">Elige una pieza</b>
+        </div>
+        <nav class="tabs" aria-label="Categorías">
+          <button class="tab active" data-tab="all" type="button">Todo</button>
+          <button class="tab" data-tab="base" type="button">Refugio</button>
+          <button class="tab" data-tab="production" type="button">Talleres</button>
+          <button class="tab" data-tab="energy" type="button">Energía</button>
+        </nav>
+      </div>
+      <div class="build-list" id="buildList"></div>
+    </section>
+
+    <div class="toast-stack" id="toasts" aria-live="polite"></div>
+    <div class="tile-tooltip hidden" id="tileTooltip"></div>
+
+    <section class="welcome" id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+      <div class="welcome-card">
+        <button class="welcome-close" id="welcomeClose" aria-label="Cerrar">×</button>
+        <div class="welcome-scene" aria-hidden="true">
+          <div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div>
+          <div class="pine p1"></div><div class="pine p2"></div><div class="pine p3"></div>
+          <div class="tiny-mill"><span></span><i></i></div>
+          <div class="river-strip"></div>
+        </div>
+        <div class="welcome-copy">
+          <span class="eyebrow">MISIÓN 01 · EL BOSQUE DESPIERTA</span>
+          <h2 id="welcomeTitle">¡Construye un refugio que funcione solo!</h2>
+          <p>El río, los árboles y las rocas tienen todo lo necesario. Tú decides cómo conectar cada invento.</p>
+          <div class="challenge-grid">
+            <div><span>1</span><b>Explora</b><small>Mira el terreno</small></div>
+            <div><span>2</span><b>Construye</b><small>Encaja las piezas</small></div>
+            <div><span>3</span><b>Automatiza</b><small>Haz que trabajen</small></div>
+          </div>
+          <button id="startBtn" class="start-btn" type="button">Comenzar la aventura <span>→</span></button>
+          <small class="save-note">Tu partida se guarda sola en este dispositivo.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="victory hidden" id="victory" role="dialog" aria-modal="true" aria-labelledby="victoryTitle">
+      <div class="victory-card">
+        <span class="victory-badge">★</span>
+        <span class="eyebrow">MISIÓN CUMPLIDA</span>
+        <h2 id="victoryTitle">¡El bosque tiene un nuevo ingeniero!</h2>
+        <p>Tu refugio ya produce madera, metal y energía. Ahora puedes seguir inventando sin límites.</p>
+        <div class="victory-stats" id="victoryStats"></div>
+        <button id="continueBtn" class="start-btn" type="button">Seguir construyendo <span>→</span></button>
+      </div>
+    </section>
+  </main>
+  <script src="./game.js"></script>
+</body>
+</html>
